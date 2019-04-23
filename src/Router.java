@@ -52,7 +52,7 @@ public class Router {
 
                 Gson gson = new Gson();
                 String jsonString = gson.toJson(routeTable);
-                out.writeUTF("客户端[" + name + "]:" + jsonString);
+                out.writeUTF(jsonString);
                 // 读取来自服务器的信息
 //                String accpet = in.readUTF();
 //                System.out.println(accpet);
@@ -101,7 +101,7 @@ class ServerThread implements Runnable {
 
     @Override
     public void run() {
-        System.out.print(name + "收到");
+        //System.out.print(name + "收到");
         try {
             try {
                 // 读取信息的DataInputStream
@@ -112,7 +112,7 @@ class ServerThread implements Runnable {
                         .getOutputStream());
                 // 读取来自客户端的信息
                 String jsonString = in.readUTF();
-
+                //System.out.println(jsonString);
                 Gson gson = new Gson();
                 RouteTable newrouteTable = gson.fromJson(jsonString, RouteTable.class);
 

@@ -18,11 +18,35 @@ public class Main {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                routers[0].sendMessageToTagetClient(8080, routers[0].getRouteTable());
-                routers[1].sendMessageToTagetClient(8081, routers[1].getRouteTable());
-                routers[2].sendMessageToTagetClient(8082, routers[2].getRouteTable());
-                routers[3].sendMessageToTagetClient(8083, routers[3].getRouteTable());
-                routers[4].sendMessageToTagetClient(8084, routers[4].getRouteTable());
+                routers[0].sendMessageToTagetClient(8081, routers[0].getRouteTable());
+                routers[1].sendMessageToTagetClient(8080, routers[1].getRouteTable());
+                routers[2].sendMessageToTagetClient(8083, routers[2].getRouteTable());
+                routers[3].sendMessageToTagetClient(8082, routers[3].getRouteTable());
+                routers[4].sendMessageToTagetClient(8081, routers[4].getRouteTable());
+
+
+                for (int i = 0; i < 5; i++) {
+                    RouteTable routetable=routers[i].getRouteTable();
+                    routetable.showRouteTable(routers[i].getName());
+
+                }
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                routers[0].sendMessageToTagetClient(8081, routers[0].getRouteTable());
+                routers[1].sendMessageToTagetClient(8080, routers[1].getRouteTable());
+                routers[2].sendMessageToTagetClient(8083, routers[2].getRouteTable());
+                routers[3].sendMessageToTagetClient(8082, routers[3].getRouteTable());
+                routers[4].sendMessageToTagetClient(8081, routers[4].getRouteTable());
+
+                for (int i = 0; i < 5; i++) {
+                    RouteTable routetable=routers[i].getRouteTable();
+                    routetable.showRouteTable(routers[i].getName());
+
+                }
 
             }
         }).start();
@@ -45,9 +69,9 @@ public class Main {
             RouteTable routeTable = new RouteTable();
             routeTable.init(routers[i].getName());
 
-//            System.out.println("请输入路由器"+routers[i].getName()+"的转发表：");
-//            targetrouter=scanner.next();
-//            cost=scanner.nextInt();
+            System.out.println("请输入路由器"+routers[i].getName()+"的转发表：");
+            targetrouter=scanner.next();
+            cost=scanner.nextInt();
 
             nextstep = targetrouter;
             RouteRecord routeRecord = new RouteRecord(targetrouter, cost, nextstep);

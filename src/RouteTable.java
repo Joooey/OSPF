@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,13 @@ public class RouteTable {
 
             routetable.add(newrouteRecord);
         }
+    }
+
+
+    public void showRouteTable(String name){
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(routetable);
+        System.out.println(name+"路由表为:"+jsonString);
     }
 
 }
