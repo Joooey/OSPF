@@ -1,11 +1,11 @@
 public class RouteRecord {
 
-    private String routerid;
+    private String targetRouter;
     private int cost;
     private String nextStep;
 
-    public RouteRecord(String routerid, int cost, String nextStep) {
-        this.routerid = routerid;
+    public RouteRecord(String targetRouter, int cost, String nextStep) {
+        this.targetRouter = targetRouter;
         this.cost = cost;
         this.nextStep = nextStep;
     }
@@ -18,16 +18,16 @@ public class RouteRecord {
         this.nextStep = nextStep;
     }
 
-    public void setRouterid(String routerid) {
-        this.routerid = routerid;
+    public void setTargetRouter(String targetRouter) {
+        this.targetRouter = targetRouter;
     }
 
     public String getNextStep() {
         return nextStep;
     }
 
-    public String getRouterid() {
-        return routerid;
+    public String getTargetRouter() {
+        return targetRouter;
     }
 
     public int getCost() {

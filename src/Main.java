@@ -1,33 +1,59 @@
-
+import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Client[] clients=new Client[5];
-        clients[0]=new Client(8080,"Router1");
-        clients[1] = new Client(8081,"Router2");
-        clients[2] = new Client(8082,"Router3");
-        clients[3] = new Client(8083,"Router4");
-        clients[4] = new Client(8084,"Router5");
 
-        for(int i=0;i<5;i++) {
-            clients[i].receiveMessageFromOtherClient();
+    public static void main(String[] args) {
+        Main main = new Main();
+        Router[] routers = new Router[5];
+        main.initRouters(routers);
+
+        /**
+         * 每个路由器开启一个等待连接接收消息的线程
+         */
+        for (int i = 0; i < 5; i++) {
+            routers[i].receiveMessageFromOtherClient();
         }
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                clients[0].sendMessageToTagetClient(8080,"message from client0");
-                clients[1].sendMessageToTagetClient(8080,"message from client1");
-                clients[2].sendMessageToTagetClient(8080,"message from client2");
-                clients[3].sendMessageToTagetClient(8080,"message from client3");
-                clients[4].sendMessageToTagetClient(8080,"message from client4");
+                routers[0].sendMessageToTagetClient(8080, routers[0].getRouteTable());
+                routers[1].sendMessageToTagetClient(8081, routers[1].getRouteTable());
+                routers[2].sendMessageToTagetClient(8082, routers[2].getRouteTable());
+                routers[3].sendMessageToTagetClient(8083, routers[3].getRouteTable());
+                routers[4].sendMessageToTagetClient(8084, routers[4].getRouteTable());
 
             }
         }).start();
 
+    }
 
+    public void initRouters(Router[] routers) {
+        Scanner scanner = new Scanner(System.in);
 
+        String targetrouter = "abc";
+        String nextstep;
+        int cost = 5;
+
+        routers[0] = new Router(8080, "a");
+        routers[1] = new Router(8081, "b");
+        routers[2] = new Router(8082, "c");
+        routers[3] = new Router(8083, "d");
+        routers[4] = new Router(8084, "e");
+        for (int i = 0; i < 5; i++) {
+            RouteTable routeTable = new RouteTable();
+            routeTable.init(routers[i].getName());
+
+//            System.out.println("请输入路由器"+routers[i].getName()+"的转发表：");
+//            targetrouter=scanner.next();
+//            cost=scanner.nextInt();
+
+            nextstep = targetrouter;
+            RouteRecord routeRecord = new RouteRecord(targetrouter, cost, nextstep);
+            routeTable.updateRouteTable(routeRecord);
+            routers[i].setRouteTable(routeTable);
+        }
 
     }
 
