@@ -26,14 +26,23 @@ public class RouteTable {
     public void updateRouteTable(RouteTable newrouteTable) {
         List<RouteRecord> newrouteTablelist=newrouteTable.getRoutetable();
         RouteRecord newRouteTableRecord;
-        for (int i = 0; i < newrouteTablelist.size(); i++) {
-            newRouteTableRecord = newrouteTablelist.get(i);
-            if (!routetable.contains(newRouteTableRecord)) {
 
-                routetable.add(newRouteTableRecord);
+        RouteRecord tempRecord=null;
+        int mincost=1000000000;
+        for (int i = 0; i < newrouteTablelist.size(); i++) {
+
+            newRouteTableRecord = newrouteTablelist.get(i);
+
+            if (!routetable.contains(newRouteTableRecord)) {
+                if(newRouteTableRecord.getCost()<mincost){
+                    mincost=newRouteTableRecord.getCost();
+                    tempRecord=newRouteTableRecord;
+                }
+
                 //需要用dijkstra算法更新
             }
         }
+        routetable.add(tempRecord);
     }
 
     /**
@@ -41,9 +50,7 @@ public class RouteTable {
      * @param newrouteRecord
      */
     public void updateRouteTable(RouteRecord newrouteRecord) {
-
         if (!routetable.contains(newrouteRecord)) {
-
             routetable.add(newrouteRecord);
         }
     }

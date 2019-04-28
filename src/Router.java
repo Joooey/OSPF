@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,6 +13,8 @@ public class Router {
     private int port;
     private String name;
     private RouteTable routeTable;
+
+
 
     public Router(int port, String name) {
         this.port = port;
@@ -70,11 +73,12 @@ public class Router {
         new Thread(() -> {
             try {
                 // 建立服务器连接,设定客户连接请求队列的长度
-                ServerSocket server = new ServerSocket(port, 3);
+                ServerSocket server = new ServerSocket(port);
                 while (true) {
                     // 等待客户连接
                     Socket socket = server.accept();
-                    new Thread(new ServerThread(socket, port, name,routeTable)).start();
+                    ServerThread serverThread = new ServerThread(socket, port, name, routeTable);
+                    new Thread(serverThread).start();
 
                 }
             } catch (IOException e) {
@@ -82,50 +86,6 @@ public class Router {
             }
         }).start();
 
-    }
-}
-
-
-class ServerThread implements Runnable {
-    private Socket socket;
-    private int port;
-    private String name;
-    private RouteTable routeTable;
-
-    public ServerThread(Socket socket, int port, String name,RouteTable routeTable) {
-        this.socket = socket;
-        this.port = port;
-        this.name = name;
-        this.routeTable=routeTable;
-    }
-
-    @Override
-    public void run() {
-        //System.out.print(name + "收到");
-        try {
-            try {
-                // 读取信息的DataInputStream
-                DataInputStream in = new DataInputStream(socket
-                        .getInputStream());
-                // 发送信息的DataOutputStream
-                DataOutputStream out = new DataOutputStream(socket
-                        .getOutputStream());
-                // 读取来自客户端的信息
-                String jsonString = in.readUTF();
-                //System.out.println(jsonString);
-                Gson gson = new Gson();
-                RouteTable newrouteTable = gson.fromJson(jsonString, RouteTable.class);
-
-                //更新本路由器路由表
-                routeTable.updateRouteTable(newrouteTable);
-
-
-            } finally {// 建立连接失败的话不会执行socket.close();
-                socket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
 

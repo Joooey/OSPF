@@ -10,4 +10,15 @@ public class RouteRecord {
         this.nextStep = nextStep;
     }
 
+    public String getTargetRouter() {
+        return targetRouter;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public String getNextStep() {
+        return nextStep;
+    }
 }
