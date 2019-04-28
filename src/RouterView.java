@@ -3,6 +3,7 @@
 import javax.swing.*;
 import javax.swing.text.View;
 import java.awt.*;
+import java.text.AttributedCharacterIterator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,7 +24,7 @@ public class RouterView extends JComponent implements IMomentsView {
     private int windowWidth;
 
     private String title;
-    private int textHeight = 20;
+    private int textHeight = 40;
 
     private volatile int curCount;
 
@@ -50,7 +51,7 @@ public class RouterView extends JComponent implements IMomentsView {
     }
 
     public Point getCircleCenter() {
-        return new Point(getX()+circleX+circleD/2+Padding,getY()+circleY+circleD+circleD/2+Padding*2);
+        return new Point(getX()+circleX+circleD/2,getY()+circleY+circleD+Padding);
 
     }
 
@@ -60,10 +61,10 @@ public class RouterView extends JComponent implements IMomentsView {
 
     public RouterView(String title, CirclePosition circlePosition) {
         this.title = title;
-        this.momentsMaxCount = 5;
+        this.momentsMaxCount = 6;
         moments = new Vector<>();
 
-        circleD = 20;
+        circleD = 50;
         this.circlePosition = circlePosition;
         initView();
     }
@@ -80,7 +81,7 @@ public class RouterView extends JComponent implements IMomentsView {
     @Override
     public void initView() {
 
-        rectH = momentsMaxCount * textHeight;
+        rectH = (momentsMaxCount+1) * textHeight;
         rectW = ViewConfigure.defaultRouterViewW;
         //定义圆圈和矩形的位置关系
         switch (circlePosition) {
@@ -125,11 +126,13 @@ public class RouterView extends JComponent implements IMomentsView {
                 break;
         }
 
-        for (int index = 0; index < momentsMaxCount; index++) {
-            Moment moment = new Moment("    目的地址        费用      下一跳");
+        //for (int index = 0; index < momentsMaxCount; index++) {
+            Moment moment = new Moment("      目的地址        费用      下一跳");
             addMoment(moment);
 
-        }
+
+
+        //}
 
     }
 
@@ -163,6 +166,7 @@ public class RouterView extends JComponent implements IMomentsView {
             try {
 
                 g.setColor(ViewConfigure.defaultTextColor);
+                g.setFont(new Font("微软雅黑",Font.PLAIN,16));
 
                 g.drawString(moments.get(index).getMomentContent(), 5 + rectX, itemY);
             } catch (Exception e) {
@@ -176,7 +180,7 @@ public class RouterView extends JComponent implements IMomentsView {
         g.fillOval(circleX, circleY, circleD, circleD);
 
         g.setColor(Color.BLACK);
-        g.drawString(title, circleX + 8, circleY+12);
+        g.drawString(title, circleX + circleD/2, circleY+circleD/2);
 
 
 

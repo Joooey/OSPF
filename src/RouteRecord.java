@@ -10,6 +10,9 @@ public class RouteRecord {
         this.nextStep = nextStep;
     }
 
+    public RouteRecord() {
+    }
+
     public String getTargetRouter() {
         return targetRouter;
     }
@@ -21,4 +24,6 @@ public class RouteRecord {
     public String getNextStep() {
         return nextStep;
     }
+
+
 }

@@ -4,6 +4,9 @@ public class MainModel {
 
     private Router[] routers;
 
+    public Router[] getRouters() {
+        return routers;
+    }
 
     public void sendMessage() {
         new Thread(() -> {
@@ -34,32 +37,40 @@ public class MainModel {
     }
 
     public void initRouters() {
-        Scanner scanner = new Scanner(System.in);
-
-        String targetrouter = "abc";
-        String nextstep;
-        int cost;
+        String targetrouter="";
+        String nextstep="";
+        int cost=1;
         routers = new Router[5];
 
-        routers[0] = new Router(8080, "a");
-        routers[1] = new Router(8081, "b");
-        routers[2] = new Router(8082, "c");
-        routers[3] = new Router(8083, "d");
-        routers[4] = new Router(8084, "e");
+        routers[0] = new Router(8080, "0.0.0.1");
+        routers[1] = new Router(8081, "0.0.0.2");
+        routers[2] = new Router(8082, "0.0.0.3");
+        routers[3] = new Router(8083, "0.0.0.4");
+        routers[4] = new Router(8084, "0.0.0.5");
 
 
         for (int i = 0; i < 5; i++) {
             RouteTable routeTable = new RouteTable();
             routeTable.init(routers[i].getName());
-
-            targetrouter = "abc";
-            cost = i;
-            nextstep = targetrouter;
-            RouteRecord routeRecord = new RouteRecord(targetrouter, cost, nextstep);
-            routeTable.updateRouteTable(routeRecord);
             routers[i].setRouteTable(routeTable);
         }
+        setInitRouteTable(0,2,1);
+        setInitRouteTable(0,3,1);
+        setInitRouteTable(0,4,1);
+        setInitRouteTable(1,2,1);
 
+
+
+
+    }
+    public void setInitRouteTable(int routerFrom,int routerTo,int cost){
+        RouteTable routeTable1=routers[routerFrom].getRouteTable();
+        routeTable1.updateRouteTable(new RouteRecord(routers[routerTo].getName(),cost,routers[routerTo].getName()));
+        routers[routerFrom].setRouteTable(routeTable1);
+
+        RouteTable routeTable2=routers[routerTo].getRouteTable();
+        routeTable2.updateRouteTable(new RouteRecord(routers[routerFrom].getName(),cost,routers[routerFrom].getName()));
+        routers[routerTo].setRouteTable(routeTable2);
     }
 
     /**

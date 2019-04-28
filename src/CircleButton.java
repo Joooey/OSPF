@@ -6,10 +6,12 @@ public class CircleButton extends JLabel {
 
 
     private int D;
+    private String text;
 
 
-    public CircleButton(int D) {
+    public CircleButton(int D, String text) {
         this.D = D;
+        this.text = text;
     }
 
 
@@ -20,9 +22,7 @@ public class CircleButton extends JLabel {
         g.fillOval((getWidth() - D) / 2, (getHeight() - D) / 2, D, D);
 
 
-        String text = "";
         g.setColor(Color.BLACK);
-        text = "SEND";
 
         g.drawString(text, (getWidth() - 25) / 2, 5 + getHeight() / 2);
 

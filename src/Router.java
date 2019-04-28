@@ -46,9 +46,6 @@ public class Router {
             Socket socket = new Socket(host, targetPort);
 
             try {
-                // 读取服务器端传过来信息的DataInputStream
-                DataInputStream in = new DataInputStream(socket
-                        .getInputStream());
                 // 向服务器端发送信息的DataOutputStream
                 DataOutputStream out = new DataOutputStream(socket
                         .getOutputStream());
@@ -56,9 +53,6 @@ public class Router {
                 Gson gson = new Gson();
                 String jsonString = gson.toJson(routeTable);
                 out.writeUTF(jsonString);
-                // 读取来自服务器的信息
-//                String accpet = in.readUTF();
-//                System.out.println(accpet);
 
             } finally {
                 socket.close();

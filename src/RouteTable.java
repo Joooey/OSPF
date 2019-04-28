@@ -32,15 +32,25 @@ public class RouteTable {
         for (int i = 0; i < newrouteTablelist.size(); i++) {
 
             newRouteTableRecord = newrouteTablelist.get(i);
+            for(int j=0;j<routetable.size();j++) {
+                if(routetable.get(j).getTargetRouter()==newRouteTableRecord.getTargetRouter()){
 
-            if (!routetable.contains(newRouteTableRecord)) {
-                if(newRouteTableRecord.getCost()<mincost){
-                    mincost=newRouteTableRecord.getCost();
-                    tempRecord=newRouteTableRecord;
                 }
 
-                //需要用dijkstra算法更新
             }
+
+
+                    if (!routetable.contains(newRouteTableRecord)) {
+
+
+                    if (newRouteTableRecord.getCost() < mincost) {
+                        mincost = newRouteTableRecord.getCost();
+                        tempRecord = newRouteTableRecord;
+                    }
+
+                    //需要用dijkstra算法更新
+                }
+
         }
         routetable.add(tempRecord);
     }

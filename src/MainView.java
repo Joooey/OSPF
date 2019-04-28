@@ -14,6 +14,7 @@ public class MainView extends JFrame implements IMainView {
 
 
     private CircleButton circleButton;
+    private JTextField textField;
     private RouterView[] routerViews;
     private Point[] circleRouterPoints;
     private Lines[] lines;
@@ -103,19 +104,19 @@ public class MainView extends JFrame implements IMainView {
 
         setLocation(screenWidth / 2 - frm_Width / 2, screenHeight / 2 - frm_Height / 2);
 
-        circleButton = new CircleButton(50);
+        circleButton = new CircleButton(50,"SEND");
         circleButton.setBounds(screenWidth - 100, 20, 50, 50);
 
         add(circleButton);
 
         int D = 60;
 
-        int xPadding = 300;
-        int yPadding = 300;
-        int yTransfer = 100;
+        int xPadding = 400;
+        int yPadding = 275;
+        int yTransfer = -50;
 
 
-        int firstLinStartX = (screenWidth - xPadding * 2 - D * 3) / 2;
+        int firstLinStartX = 50;
         int firstLineStartY = (screenHeight - yPadding - D * 2) / 2 + yTransfer;
 
         routerViews[0] = new RouterView("1", CirclePosition.RIGHT);
@@ -143,10 +144,79 @@ public class MainView extends JFrame implements IMainView {
         routerViews[4].setBounds(circleRouterPoints[4]);
         add(routerViews[4]);
 
+        JLabel label=new JLabel("设置距离：");
+        label.setForeground(ViewConfigure.defaultTextColor);
+        label.setFont(ViewConfigure.defaultTextFont);
+        label.setBounds(screenWidth-500,100,100,50);
+        add(label);
+        JLabel label1=new JLabel("Router 1 - Router 3 :");
+        label1.setForeground(ViewConfigure.defaultTextColor);
+        label1.setFont(ViewConfigure.defaultTextFont);
+        label1.setBounds(screenWidth-500,200,300,50);
+        add(label1);
+        JLabel label2=new JLabel("Router 1 - Router 4 :");
+        label2.setForeground(ViewConfigure.defaultTextColor);
+        label2.setFont(ViewConfigure.defaultTextFont);
+        label2.setBounds(screenWidth-500,300,300,50);
+        add(label2);
+        JLabel label3=new JLabel("Router 1 - Router 5 :");
+        label3.setForeground(ViewConfigure.defaultTextColor);
+        label3.setFont(ViewConfigure.defaultTextFont);
+        label3.setBounds(screenWidth-500,400,300,50);
+        add(label3);
+
+        JLabel label4=new JLabel("Router 2 - Router 3 ");
+        label4.setForeground(ViewConfigure.defaultTextColor);
+        label4.setFont(ViewConfigure.defaultTextFont);
+        label4.setBounds(screenWidth-500,500,300,50);
+        add(label4);
+
+
+
+
+        JTextField textField1=new JTextField(10);
+        textField1.setBounds(screenWidth-300,210,60,30);
+        add(textField1);
+
+        JTextField textField2=new JTextField(10);
+        textField2.setBounds(screenWidth-300,310,60,30);
+        add(textField2);
+
+        JTextField textField3=new JTextField(10);
+        textField3.setBounds(screenWidth-300,410,60,30);
+        add(textField3);
+
+        JTextField textField4=new JTextField(10);
+        textField4.setBounds(screenWidth-300,510,60,30);
+        add(textField4);
+
+        JButton submitButton = new JButton("确认");
+        submitButton.setBounds(screenWidth-400,610,60,30);
+        add(submitButton);
+
+        for(int index=0;index<5;index++){
+            addRouteRecord(index);
+        }
+
         lines[0] = new Lines(routerViews, 0, 2);
         lines[1] = new Lines(routerViews, 0, 3);
         lines[2] = new Lines(routerViews, 0, 4);
         lines[3] = new Lines(routerViews, 1, 2);
+        ComputeDistance();
+
+        //设置窗体是否可以调整大小
+        setResizable(true);
+
+        setVisible(true);
+        //关闭操作
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+
+    /**
+     * 计算动画小方块x,y方向移动的距离
+     */
+    private void ComputeDistance() {
 
         for (int index = 0; index < LineNums; index++) {
             LittleRectXDistance[index] = lines[index].getPoint2().x - lines[index].getPoint1().x;
@@ -156,12 +226,24 @@ public class MainView extends JFrame implements IMainView {
             LittleRectXDistance[index] = lines[index-LineNums].getPoint1().x - lines[index-LineNums].getPoint2().x;
             LittleRectYDistance[index] = lines[index-LineNums].getPoint1().y - lines[index-LineNums].getPoint2().y;
         }
-        //设置窗体是否可以调整大小
-        setResizable(true);
+    }
+    private void addRouteRecord(int i){
+        String target="";
+        String next="";
+        int cost=0;
+        String resultString="";
+        RouteTable routeTable=mainModel.getRouters()[i].getRouteTable();
+        RouteRecord routeRecord;
+        for(int index=0;index<routeTable.getRoutetable().size();index++){
+            routeRecord=routeTable.getRoutetable().get(index);
+            target=routeRecord.getTargetRouter();
+            next=routeRecord.getNextStep();
+            cost=routeRecord.getCost();
+            resultString="       "+target+"           "+cost+"           "+next;
+            routerViews[i].addMoment(new Moment(resultString));
 
-        setVisible(true);
-        //关闭操作
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        }
+
     }
 
 
