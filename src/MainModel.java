@@ -11,16 +11,15 @@ public class MainModel {
     public void sendMessage() {
         new Thread(() -> {
 
-
-            routers[0].sendMessageToTagetClient(8081, routers[0].getRouteTable());
-            routers[1].sendMessageToTagetClient(8080, routers[1].getRouteTable());
-            routers[2].sendMessageToTagetClient(8083, routers[2].getRouteTable());
-            routers[3].sendMessageToTagetClient(8082, routers[3].getRouteTable());
-            routers[4].sendMessageToTagetClient(8081, routers[4].getRouteTable());
-
+            routers[0].sendMessageToTagetClient();
+            routers[1].sendMessageToTagetClient();
+            routers[2].sendMessageToTagetClient();
+            routers[3].sendMessageToTagetClient();
+            routers[4].sendMessageToTagetClient();
 
         }).start();
     }
+
 
     public void showMessages() {
         for (int i = 0; i < 5; i++) {
@@ -37,9 +36,9 @@ public class MainModel {
     }
 
     public void initRouters() {
-        String targetrouter="";
-        String nextstep="";
-        int cost=1;
+        String targetrouter = "";
+        String nextstep = "";
+        int cost = 1;
         routers = new Router[5];
 
         routers[0] = new Router(8080, "0.0.0.1");
@@ -50,26 +49,37 @@ public class MainModel {
 
 
         for (int i = 0; i < 5; i++) {
-            RouteTable routeTable = new RouteTable();
+            RouteTable routeTable = new RouteTable(routers[i].getName());
             routeTable.init(routers[i].getName());
             routers[i].setRouteTable(routeTable);
         }
-        setInitRouteTable(0,2,1);
-        setInitRouteTable(0,3,1);
-        setInitRouteTable(0,4,1);
-        setInitRouteTable(1,2,1);
 
+//        setInitRouteTable(0, 2, 1);
+//        setInitRouteTable(0, 3, 1);
+//        setInitRouteTable(0, 4, 1);
+//        setInitRouteTable(1, 2, 1);
 
+        InitAdjRouters(0, 2);
+        InitAdjRouters(0, 3);
+        InitAdjRouters(0, 4);
+        InitAdjRouters(1, 2);
 
 
     }
-    public void setInitRouteTable(int routerFrom,int routerTo,int cost){
-        RouteTable routeTable1=routers[routerFrom].getRouteTable();
-        routeTable1.updateRouteTable(new RouteRecord(routers[routerTo].getName(),cost,routers[routerTo].getName()));
+
+    public void InitAdjRouters(int Router1Index, int Router2Index) {
+        routers[Router1Index].setAdjRouters(routers[Router2Index]);
+        routers[Router2Index].setAdjRouters(routers[Router1Index]);
+
+    }
+
+    public void setInitRouteTable(int routerFrom, int routerTo, int cost) {
+        RouteTable routeTable1 = routers[routerFrom].getRouteTable();
+        routeTable1.updateRouteTable(new RouteRecord(routers[routerTo].getName(), cost, routers[routerTo].getName()));
         routers[routerFrom].setRouteTable(routeTable1);
 
-        RouteTable routeTable2=routers[routerTo].getRouteTable();
-        routeTable2.updateRouteTable(new RouteRecord(routers[routerFrom].getName(),cost,routers[routerFrom].getName()));
+        RouteTable routeTable2 = routers[routerTo].getRouteTable();
+        routeTable2.updateRouteTable(new RouteRecord(routers[routerFrom].getName(), cost, routers[routerFrom].getName()));
         routers[routerTo].setRouteTable(routeTable2);
     }
 

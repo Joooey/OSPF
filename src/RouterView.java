@@ -51,7 +51,7 @@ public class RouterView extends JComponent implements IMomentsView {
     }
 
     public Point getCircleCenter() {
-        return new Point(getX()+circleX+circleD/2,getY()+circleY+circleD+Padding);
+        return new Point(getX() + circleX + circleD / 2, getY() + circleY + circleD + Padding);
 
     }
 
@@ -81,7 +81,7 @@ public class RouterView extends JComponent implements IMomentsView {
     @Override
     public void initView() {
 
-        rectH = (momentsMaxCount+1) * textHeight;
+        rectH = (momentsMaxCount + 1) * textHeight;
         rectW = ViewConfigure.defaultRouterViewW;
         //定义圆圈和矩形的位置关系
         switch (circlePosition) {
@@ -126,15 +126,12 @@ public class RouterView extends JComponent implements IMomentsView {
                 break;
         }
 
-        //for (int index = 0; index < momentsMaxCount; index++) {
-            Moment moment = new Moment("      目的地址        费用      下一跳");
-            addMoment(moment);
+        Moment moment = new Moment("      目的地址        费用      下一跳");
+        addMoment(moment);
 
-
-
-        //}
 
     }
+
 
     @Override
     public void addMoment(Moment moment) {
@@ -153,6 +150,14 @@ public class RouterView extends JComponent implements IMomentsView {
     }
 
     @Override
+    public void replaceMoments(Vector<Moment> moments) {
+        this.moments.clear();
+        this.moments.addAll(moments);
+        curCount=moments.size();
+        repaint();
+    }
+
+    @Override
     public void paint(Graphics g) {
         super.paint(g);
 
@@ -166,7 +171,7 @@ public class RouterView extends JComponent implements IMomentsView {
             try {
 
                 g.setColor(ViewConfigure.defaultTextColor);
-                g.setFont(new Font("微软雅黑",Font.PLAIN,16));
+                g.setFont(new Font("微软雅黑", Font.PLAIN, 16));
 
                 g.drawString(moments.get(index).getMomentContent(), 5 + rectX, itemY);
             } catch (Exception e) {
@@ -180,8 +185,7 @@ public class RouterView extends JComponent implements IMomentsView {
         g.fillOval(circleX, circleY, circleD, circleD);
 
         g.setColor(Color.BLACK);
-        g.drawString(title, circleX + circleD/2, circleY+circleD/2);
-
+        g.drawString(title, circleX + circleD / 2, circleY + circleD / 2);
 
 
     }

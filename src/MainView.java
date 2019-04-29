@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,8 +19,8 @@ public class MainView extends JFrame implements IMainView {
     private RouterView[] routerViews;
     private Point[] circleRouterPoints;
     private Lines[] lines;
-    private int LittleRectNums=8;
-    private int LineNums=4;
+    private int LittleRectNums = 8;
+    private int LineNums = 4;
     private int LittleRectWidth = 10;
     private int LittleRectX[] = new int[LittleRectNums];
     private int LittleRectY[] = new int[LittleRectNums];
@@ -47,7 +48,7 @@ public class MainView extends JFrame implements IMainView {
         g.setColor(Color.ORANGE);
 
         for (int index = LineNums; index < LittleRectNums; index++) {
-            g.fillRect(LittleRectX[index] + lines[index-LineNums].getPoint2().x, LittleRectY[index] + lines[index-LineNums].getPoint2().y, LittleRectWidth, LittleRectWidth);
+            g.fillRect(LittleRectX[index] + lines[index - LineNums].getPoint2().x, LittleRectY[index] + lines[index - LineNums].getPoint2().y, LittleRectWidth, LittleRectWidth);
         }
 
         g.setColor(ViewConfigure.defaultTextColor);
@@ -75,7 +76,7 @@ public class MainView extends JFrame implements IMainView {
         circleRouterPoints = new Point[RouterConfigure.routerCount];
         lines = new Lines[LineNums];
 
-        executorService=Executors.newSingleThreadExecutor();
+        executorService = Executors.newSingleThreadExecutor();
 
 
     }
@@ -104,7 +105,7 @@ public class MainView extends JFrame implements IMainView {
 
         setLocation(screenWidth / 2 - frm_Width / 2, screenHeight / 2 - frm_Height / 2);
 
-        circleButton = new CircleButton(50,"SEND");
+        circleButton = new CircleButton(50, "SEND");
         circleButton.setBounds(screenWidth - 100, 20, 50, 50);
 
         add(circleButton);
@@ -144,57 +145,58 @@ public class MainView extends JFrame implements IMainView {
         routerViews[4].setBounds(circleRouterPoints[4]);
         add(routerViews[4]);
 
-        JLabel label=new JLabel("设置距离：");
+        //布局距离输入
+
+        JLabel label = new JLabel("设置距离：");
         label.setForeground(ViewConfigure.defaultTextColor);
         label.setFont(ViewConfigure.defaultTextFont);
-        label.setBounds(screenWidth-500,100,100,50);
+        label.setBounds(screenWidth - 500, 100, 100, 50);
         add(label);
-        JLabel label1=new JLabel("Router 1 - Router 3 :");
+        JLabel label1 = new JLabel("Router 1 - Router 3 :");
         label1.setForeground(ViewConfigure.defaultTextColor);
         label1.setFont(ViewConfigure.defaultTextFont);
-        label1.setBounds(screenWidth-500,200,300,50);
+        label1.setBounds(screenWidth - 500, 200, 300, 50);
         add(label1);
-        JLabel label2=new JLabel("Router 1 - Router 4 :");
+        JLabel label2 = new JLabel("Router 1 - Router 4 :");
         label2.setForeground(ViewConfigure.defaultTextColor);
         label2.setFont(ViewConfigure.defaultTextFont);
-        label2.setBounds(screenWidth-500,300,300,50);
+        label2.setBounds(screenWidth - 500, 300, 300, 50);
         add(label2);
-        JLabel label3=new JLabel("Router 1 - Router 5 :");
+        JLabel label3 = new JLabel("Router 1 - Router 5 :");
         label3.setForeground(ViewConfigure.defaultTextColor);
         label3.setFont(ViewConfigure.defaultTextFont);
-        label3.setBounds(screenWidth-500,400,300,50);
+        label3.setBounds(screenWidth - 500, 400, 300, 50);
         add(label3);
 
-        JLabel label4=new JLabel("Router 2 - Router 3 ");
+        JLabel label4 = new JLabel("Router 2 - Router 3 ");
         label4.setForeground(ViewConfigure.defaultTextColor);
         label4.setFont(ViewConfigure.defaultTextFont);
-        label4.setBounds(screenWidth-500,500,300,50);
+        label4.setBounds(screenWidth - 500, 500, 300, 50);
         add(label4);
 
 
-
-
-        JTextField textField1=new JTextField(10);
-        textField1.setBounds(screenWidth-300,210,60,30);
+        JTextField textField1 = new JTextField(10);
+        textField1.setBounds(screenWidth - 300, 210, 60, 30);
         add(textField1);
 
-        JTextField textField2=new JTextField(10);
-        textField2.setBounds(screenWidth-300,310,60,30);
+        JTextField textField2 = new JTextField(10);
+        textField2.setBounds(screenWidth - 300, 310, 60, 30);
         add(textField2);
 
-        JTextField textField3=new JTextField(10);
-        textField3.setBounds(screenWidth-300,410,60,30);
+        JTextField textField3 = new JTextField(10);
+        textField3.setBounds(screenWidth - 300, 410, 60, 30);
         add(textField3);
 
-        JTextField textField4=new JTextField(10);
-        textField4.setBounds(screenWidth-300,510,60,30);
+        JTextField textField4 = new JTextField(10);
+        textField4.setBounds(screenWidth - 300, 510, 60, 30);
         add(textField4);
 
         JButton submitButton = new JButton("确认");
-        submitButton.setBounds(screenWidth-400,610,60,30);
+        submitButton.setBounds(screenWidth - 400, 610, 60, 30);
         add(submitButton);
 
-        for(int index=0;index<5;index++){
+
+        for (int index = 0; index < 5; index++) {
             addRouteRecord(index);
         }
 
@@ -223,26 +225,32 @@ public class MainView extends JFrame implements IMainView {
             LittleRectYDistance[index] = lines[index].getPoint2().y - lines[index].getPoint1().y;
         }
         for (int index = LineNums; index < LittleRectNums; index++) {
-            LittleRectXDistance[index] = lines[index-LineNums].getPoint1().x - lines[index-LineNums].getPoint2().x;
-            LittleRectYDistance[index] = lines[index-LineNums].getPoint1().y - lines[index-LineNums].getPoint2().y;
+            LittleRectXDistance[index] = lines[index - LineNums].getPoint1().x - lines[index - LineNums].getPoint2().x;
+            LittleRectYDistance[index] = lines[index - LineNums].getPoint1().y - lines[index - LineNums].getPoint2().y;
         }
     }
-    private void addRouteRecord(int i){
-        String target="";
-        String next="";
-        int cost=0;
-        String resultString="";
-        RouteTable routeTable=mainModel.getRouters()[i].getRouteTable();
+
+    private void addRouteRecord(int i) {
+        String target = "";
+        String next = "";
+        int cost = 0;
+        String resultString = "";
+        RouteTable routeTable = mainModel.getRouters()[i].getRouteTable();
         RouteRecord routeRecord;
-        for(int index=0;index<routeTable.getRoutetable().size();index++){
-            routeRecord=routeTable.getRoutetable().get(index);
-            target=routeRecord.getTargetRouter();
-            next=routeRecord.getNextStep();
-            cost=routeRecord.getCost();
-            resultString="       "+target+"           "+cost+"           "+next;
-            routerViews[i].addMoment(new Moment(resultString));
+
+        Vector<Moment> moments = new Vector<>();
+
+        for (int index = 0; index < routeTable.getRoutetable().size(); index++) {
+            routeRecord = routeTable.getRoutetable().get(index);
+            target = routeRecord.getTargetRouter();
+            next = routeRecord.getNextStep();
+            cost = routeRecord.getCost();
+            resultString = "       " + target + "           " + cost + "           " + next;
+            moments.add(new Moment(resultString));
 
         }
+        routerViews[i].replaceMoments(moments);
+
 
     }
 
@@ -283,7 +291,9 @@ public class MainView extends JFrame implements IMainView {
 
                 mainModel.sendMessage();
                 executorService.execute(MainView.this::drawFrame);
-
+                for (int index = 0; index < 5; index++) {
+                    addRouteRecord(index);
+                }
 
             }
 

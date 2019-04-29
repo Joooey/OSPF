@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Router {
@@ -13,6 +15,7 @@ public class Router {
     private int port;
     private String name;
     private RouteTable routeTable;
+    private List<Router> AdjRouters=new ArrayList<>();
 
 
 
@@ -32,6 +35,10 @@ public class Router {
         return name;
     }
 
+    public int getPort() {
+        return port;
+    }
+
     public RouteTable getRouteTable() {
         return routeTable;
     }
@@ -40,26 +47,36 @@ public class Router {
         this.routeTable = routeTable;
     }
 
-    public void sendMessageToTagetClient(int targetPort, RouteTable routeTable) {
-        try {
-            // 连接到服务器
-            Socket socket = new Socket(host, targetPort);
+    public void setAdjRouters(Router adjRouter) {
+        AdjRouters.add(adjRouter);
+    }
+
+    public void sendMessageToTagetClient() {
+        int targetPort;
+        for(int index=0;index<AdjRouters.size();index++){
+            targetPort=AdjRouters.get(index).port;
 
             try {
-                // 向服务器端发送信息的DataOutputStream
-                DataOutputStream out = new DataOutputStream(socket
-                        .getOutputStream());
+                // 连接到服务器
+                Socket socket = new Socket(host, targetPort);
 
-                Gson gson = new Gson();
-                String jsonString = gson.toJson(routeTable);
-                out.writeUTF(jsonString);
+                try {
+                    // 向服务器端发送信息的DataOutputStream
+                    DataOutputStream out = new DataOutputStream(socket
+                            .getOutputStream());
 
-            } finally {
-                socket.close();
+                    Gson gson = new Gson();
+                    String jsonString = gson.toJson(this.routeTable);
+                    out.writeUTF(jsonString+"!"+name);
+
+                } finally {
+                    socket.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
     }
 
 
@@ -71,7 +88,7 @@ public class Router {
                 while (true) {
                     // 等待客户连接
                     Socket socket = server.accept();
-                    ServerThread serverThread = new ServerThread(socket, port, name, routeTable);
+                    ServerThread serverThread = new ServerThread(socket, this);
                     new Thread(serverThread).start();
 
                 }
