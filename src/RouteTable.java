@@ -1,18 +1,17 @@
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class RouteTable {
     private String selfname;
-    private List<RouteRecord> routetable;
+    private Vector<RouteRecord> routetable;
 
     public RouteTable(String selfname) {
-        this.routetable = new ArrayList<>();
+        this.routetable = new Vector<>();
         this.selfname = selfname;
     }
 
-    public List<RouteRecord> getRoutetable() {
+    public Vector<RouteRecord> getRoutetable() {
         return routetable;
     }
 
@@ -23,14 +22,15 @@ public class RouteTable {
     }
 
     /**
-     * 更新路由表
-     *
+     * @param name          接收到name的路由表
      * @param newrouteTable
      */
-    public void updateRouteTable(String name, RouteTable newrouteTable) {
+    public boolean updateRouteTable(String name, RouteTable newrouteTable) {
 
-        List<RouteRecord> newrouteTablelist = newrouteTable.getRoutetable();
+        Vector<RouteRecord> newrouteTablelist = newrouteTable.getRoutetable();
         RouteRecord newRouteTableRecord;
+//        showRouteTable(selfname);
+
         boolean existed;
         for (int i = 0; i < newrouteTablelist.size(); i++) {
             newRouteTableRecord = newrouteTablelist.get(i);
@@ -40,17 +40,16 @@ public class RouteTable {
                 routetable.add(new RouteRecord(newRouteTableRecord.getTargetRouter(), newRouteTableRecord.getCost() + 1, newRouteTableRecord.getTargetRouter()));
             } else {
                 existed = false;
-                for (int j = 0; j < routetable.size(); j++) {
+                int size = routetable.size();
+                for (int j = 0; j < size; j++) {
                     if (newRouteTableRecord.equals(routetable.get(j)) || newRouteTableRecord.getTargetRouter().equals(selfname)) {
                         existed = true;
                         break;
-                    }
-                    //如果cost<当前cost
-                    else if (routetable.get(j).getTargetRouter().equals(newRouteTableRecord.getTargetRouter())) {
+                    } else if (routetable.get(j).getTargetRouter().equals(newRouteTableRecord.getTargetRouter())) {
                         existed = true;
-                        if (routetable.get(j).getCost() > newRouteTableRecord.getCost() + 1) {
-                            routetable.remove(j);
-                            routetable.add(new RouteRecord(newRouteTableRecord.getTargetRouter(), newRouteTableRecord.getCost() + 1, name));
+                        if (routetable.get(j).getCost() > (newRouteTableRecord.getCost() + 1)) {
+                            routetable.get(j).setCost(newRouteTableRecord.getCost() + 1);
+                            routetable.get(j).setNextStep(name);
                         }
                         break;
                     }
@@ -58,19 +57,24 @@ public class RouteTable {
                 if (!existed) {
                     routetable.add(new RouteRecord(newRouteTableRecord.getTargetRouter(), newRouteTableRecord.getCost() + 1, name));
                 }
+
             }
         }
-    }
+//        //创建一个集合
+//        Vector list = new Vector();
+//        //遍历数组往集合里存元素
+//        for (RouteRecord aRoutetable : routetable) {
+//            //如果集合里面没有相同的元素才往里存
+//            if (!list.contains(aRoutetable)) {
+//                list.add(aRoutetable);
+//            }
+//        }
+//        routetable = list;
+//        Gson gson=new Gson();
+//        System.out.println(selfname+"@@@"+gson.toJson(routetable));
 
-    /**
-     * 用于向路由表中添加初始化时用户输入的路径
-     *
-     * @param newrouteRecord
-     */
-    public void updateRouteTable(RouteRecord newrouteRecord) {
-        if (!routetable.contains(newrouteRecord)) {
-            routetable.add(newrouteRecord);
-        }
+        return true;
+
     }
 
 

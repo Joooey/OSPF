@@ -12,11 +12,16 @@ public class ServerThread implements Runnable {
     private Socket socket;
     private Router router;
 
+    private Router.OnUpdateViewListener onUpdateViewListener;
 
-    public ServerThread(Socket socket, Router router) {
+
+    public ServerThread(Socket socket, Router router, Router.OnUpdateViewListener onUpdateViewListener) {
         this.socket = socket;
         this.router=router;
+        this.onUpdateViewListener=onUpdateViewListener;
     }
+
+
 
     @Override
     public void run() {
@@ -33,9 +38,12 @@ public class ServerThread implements Runnable {
                 Gson gson = new Gson();
                 RouteTable newrouteTable = gson.fromJson(jsonString, RouteTable.class);
 
+
                 //更新本路由器路由表
-                router.getRouteTable().updateRouteTable(nameString,newrouteTable);
-                router.getRouteTable().showRouteTable(router.getName());
+                boolean b = router.getRouteTable().updateRouteTable(nameString, newrouteTable);
+                if (b){
+                    onUpdateViewListener.updateView(router);
+                }
 
 
             } finally {// 建立连接失败的话不会执行socket.close();

@@ -14,16 +14,30 @@ public class Router {
     private String host = "localhost";
     private int port;
     private String name;
+    private int index;
     private RouteTable routeTable;
-    private List<Router> AdjRouters=new ArrayList<>();
+    private List<Router> AdjRouters = new ArrayList<>();
 
 
+    private OnUpdateViewListener onUpdateViewListener;
 
-    public Router(int port, String name) {
-        this.port = port;
-        this.name = name;
+    public void setOnUpdateViewListener(OnUpdateViewListener onUpdateViewListener) {
+        this.onUpdateViewListener = onUpdateViewListener;
     }
 
+    interface OnUpdateViewListener{
+        void updateView(Router router);
+    }
+
+    public Router(int port, String name,int index) {
+        this.port = port;
+        this.name = name;
+        this.index=index;
+    }
+
+    public int getIndex() {
+        return index;
+    }
 
     // 连接到指定的主机和端口
     public Router(String host, int port) {
@@ -53,8 +67,8 @@ public class Router {
 
     public void sendMessageToTagetClient() {
         int targetPort;
-        for(int index=0;index<AdjRouters.size();index++){
-            targetPort=AdjRouters.get(index).port;
+        for (int index = 0; index < AdjRouters.size(); index++) {
+            targetPort = AdjRouters.get(index).port;
 
             try {
                 // 连接到服务器
@@ -66,8 +80,13 @@ public class Router {
                             .getOutputStream());
 
                     Gson gson = new Gson();
-                    String jsonString = gson.toJson(this.routeTable);
-                    out.writeUTF(jsonString+"!"+name);
+                    try {
+                        String jsonString = gson.toJson(this.routeTable);
+                        out.writeUTF(jsonString + "!" + name);
+                    }catch (Exception e)
+                    {
+                        int a=0;
+                    }
 
                 } finally {
                     socket.close();
@@ -88,7 +107,8 @@ public class Router {
                 while (true) {
                     // 等待客户连接
                     Socket socket = server.accept();
-                    ServerThread serverThread = new ServerThread(socket, this);
+
+                    ServerThread serverThread = new ServerThread(socket, this,onUpdateViewListener);
                     new Thread(serverThread).start();
 
                 }

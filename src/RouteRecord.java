@@ -4,6 +4,14 @@ public class RouteRecord {
     private int cost;
     private String nextStep;
 
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public void setNextStep(String nextStep) {
+        this.nextStep = nextStep;
+    }
+
     public RouteRecord(String targetRouter, int cost, String nextStep) {
         this.targetRouter = targetRouter;
         this.cost = cost;

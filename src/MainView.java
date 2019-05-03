@@ -5,13 +5,8 @@ import java.awt.event.MouseListener;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class MainView extends JFrame implements IMainView {
+public class MainView extends JFrame implements IMainView, Router.OnUpdateViewListener {
 
 
     private CircleButton circleButton;
@@ -71,7 +66,7 @@ public class MainView extends JFrame implements IMainView {
 
     @Override
     public void initData() {
-        mainModel = new MainModel();
+        mainModel = new MainModel(this::updateView);
         routerViews = new RouterView[RouterConfigure.routerCount];
         circleRouterPoints = new Point[RouterConfigure.routerCount];
         lines = new Lines[LineNums];
@@ -196,10 +191,6 @@ public class MainView extends JFrame implements IMainView {
         add(submitButton);
 
 
-        for (int index = 0; index < 5; index++) {
-            addRouteRecord(index);
-        }
-
         lines[0] = new Lines(routerViews, 0, 2);
         lines[1] = new Lines(routerViews, 0, 3);
         lines[2] = new Lines(routerViews, 0, 4);
@@ -239,7 +230,7 @@ public class MainView extends JFrame implements IMainView {
         RouteRecord routeRecord;
 
         Vector<Moment> moments = new Vector<>();
-
+        moments.add(new Moment("      目的地址        费用      下一跳"));
         for (int index = 0; index < routeTable.getRoutetable().size(); index++) {
             routeRecord = routeTable.getRoutetable().get(index);
             target = routeRecord.getTargetRouter();
@@ -250,8 +241,6 @@ public class MainView extends JFrame implements IMainView {
 
         }
         routerViews[i].replaceMoments(moments);
-
-
     }
 
 
@@ -283,17 +272,19 @@ public class MainView extends JFrame implements IMainView {
         }
     }
 
+
     @Override
     public void initListener() {
         circleButton.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+for (int index=0;index<10;index++){
+    executorService.execute(MainView.this::drawFrame);
+    mainModel.sendMessage();
+    mainModel.showMessages();
+}
 
-                mainModel.sendMessage();
-                executorService.execute(MainView.this::drawFrame);
-                for (int index = 0; index < 5; index++) {
-                    addRouteRecord(index);
-                }
+
 
             }
 
@@ -319,6 +310,12 @@ public class MainView extends JFrame implements IMainView {
 
 
         });
+    }
+
+    @Override
+    public void updateView(Router router) {
+
+        addRouteRecord(router.getIndex());
     }
 }
 
