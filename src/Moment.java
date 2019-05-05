@@ -13,4 +13,8 @@ public class Moment {
         return momentContent;
     }
 
+    @Override
+    public String toString() {
+        return momentContent;
+    }
 }

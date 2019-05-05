@@ -33,5 +33,8 @@ public class RouteRecord {
         return nextStep;
     }
 
-
+    @Override
+    public String toString() {
+        return targetRouter + " " + cost + " " + nextStep;
+    }
 }

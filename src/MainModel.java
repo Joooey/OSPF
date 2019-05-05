@@ -1,9 +1,6 @@
-import java.util.LinkedList;
-import java.util.Scanner;
 import java.util.concurrent.*;
 
 public class MainModel {
-
     private Router[] routers;
 
     private Executor executor;
@@ -13,7 +10,11 @@ public class MainModel {
         return routers;
     }
 
+
     private Router.OnUpdateViewListener onUpdateViewListener;
+
+
+
 
     public void sendMessage() {
         executor.execute(routers[0]::sendMessageToTagetClient);
@@ -30,6 +31,9 @@ public class MainModel {
             routetable.showRouteTable(routers[i].getName());
 
         }
+
+        System.out.println("--------------");
+        System.out.println("");
     }
 
     public MainModel(Router.OnUpdateViewListener onUpdateViewListener) {
@@ -37,6 +41,12 @@ public class MainModel {
         initRouters();
         showMessages();
         receiveMessages();
+    }
+
+    public void updateDistance(Distance[] distances ){
+        for(int i=0;i<5;i++){
+            routers[i].setDistance(distances);
+        }
     }
 
     public void initRouters() {
@@ -54,6 +64,11 @@ public class MainModel {
         routers[4] = new Router(8084, "0.0.0.5",4);
 
 
+        InitAdjRouters(0, 2);
+        InitAdjRouters(0, 3);
+        InitAdjRouters(0, 4);
+        InitAdjRouters(1, 2);
+
         for (int i = 0; i < 5; i++) {
             RouteTable routeTable = new RouteTable(routers[i].getName());
             routeTable.init(routers[i].getName());
@@ -62,10 +77,7 @@ public class MainModel {
         }
 
 
-        InitAdjRouters(0, 2);
-        InitAdjRouters(0, 3);
-        InitAdjRouters(0, 4);
-        InitAdjRouters(1, 2);
+
 
         blockingDeque = new LinkedBlockingDeque<>();
 

@@ -5,10 +5,7 @@ import javax.swing.text.View;
 import java.awt.*;
 import java.text.AttributedCharacterIterator;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * @author dmrfcoder
@@ -18,7 +15,7 @@ public class RouterView extends JComponent implements IMomentsView {
 
     private int momentsMaxCount;
 
-    private volatile Vector<Moment> moments;
+    private volatile Set<String> moments;
 
     private int windowHeight;
     private int windowWidth;
@@ -62,7 +59,7 @@ public class RouterView extends JComponent implements IMomentsView {
     public RouterView(String title, CirclePosition circlePosition) {
         this.title = title;
         this.momentsMaxCount = 6;
-        moments = new Vector<>();
+        moments = new LinkedHashSet<>();
 
         circleD = 50;
         this.circlePosition = circlePosition;
@@ -136,13 +133,13 @@ public class RouterView extends JComponent implements IMomentsView {
     @Override
     public void addMoment(Moment moment) {
         if (curCount < momentsMaxCount) {
-            moments.add(moment);
+            moments.add(moment.getMomentContent());
             curCount++;
         } else {
             moments.remove(0);
             curCount--;
 
-            moments.add(moment);
+            moments.add(moment.getMomentContent());
             curCount++;
 
         }
@@ -150,10 +147,11 @@ public class RouterView extends JComponent implements IMomentsView {
     }
 
     @Override
-    public void replaceMoments(Vector<Moment> moments) {
+    public synchronized void replaceMoments(Vector<Moment> moments) {
         this.moments.clear();
-        this.moments.addAll(moments);
-        curCount=moments.size();
+        for (Moment moment : moments) {
+            addMoment(moment);
+        }
         repaint();
     }
 
@@ -161,11 +159,12 @@ public class RouterView extends JComponent implements IMomentsView {
     public void paint(Graphics g) {
         super.paint(g);
 
+
         g.setColor(ViewConfigure.defaultTextColor);
         g.drawRect(rectX, rectY, rectW, rectH);
 
-
-        for (int index = 0; index < curCount; index++) {
+        int index = 0;
+        for (String moment : moments) {
             int itemY = rectY + textHeight * (index + 1);
 
             try {
@@ -173,12 +172,13 @@ public class RouterView extends JComponent implements IMomentsView {
                 g.setColor(ViewConfigure.defaultTextColor);
                 g.setFont(new Font("微软雅黑", Font.PLAIN, 16));
 
-                g.drawString(moments.get(index).getMomentContent(), 5 + rectX, itemY);
+                g.drawString(moment, 5 + rectX, itemY);
             } catch (Exception e) {
                 System.out.println("Exception-MomentView-paint:" + e.getLocalizedMessage());
             }
-
+            index++;
         }
+
         g.setColor(ViewConfigure.defaultTextColor);
 
 

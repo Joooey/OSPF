@@ -1,17 +1,24 @@
 import com.google.gson.Gson;
+import sun.applet.Main;
 
 import java.util.*;
 
 public class RouteTable {
     private String selfname;
-    private Vector<RouteRecord> routetable;
+    private Set<RouteRecord> routetable;
+
+
+
+    public String getSelfname() {
+        return selfname;
+    }
 
     public RouteTable(String selfname) {
-        this.routetable = new Vector<>();
+        this.routetable = new LinkedHashSet<>();
         this.selfname = selfname;
     }
 
-    public Vector<RouteRecord> getRoutetable() {
+    public Set<RouteRecord> getRoutetable() {
         return routetable;
     }
 
@@ -21,57 +28,79 @@ public class RouteTable {
         routetable.add(routeRecord);
     }
 
+
+    private void Print(Set<RouteRecord> routeRecords) {
+        for (RouteRecord routeRecord : routeRecords) {
+            System.out.println(routeRecord.getTargetRouter());
+        }
+        System.out.println("----------");
+    }
+
+
+    public int getCost(String sourcename,String destname,Distance[] distance) {
+        for (int i = 0; i < distance.length; i++) {
+            Distance d = distance[i];
+            if (sourcename.equals(d.getRouter1().getName()) && destname.equals(d.getRouter2().getName())) {
+                return d.getDistance();
+
+            } else if (sourcename.equals(d.getRouter2().getName()) && destname.equals(d.getRouter1().getName())) {
+                return d.getDistance();
+            }
+        }
+        return -1;
+    }
+
     /**
      * @param name          接收到name的路由表
      * @param newrouteTable
      */
-    public boolean updateRouteTable(String name, RouteTable newrouteTable) {
+    public synchronized boolean updateRouteTable(String name, RouteTable newrouteTable,Distance[] distances) {
 
-        Vector<RouteRecord> newrouteTablelist = newrouteTable.getRoutetable();
-        RouteRecord newRouteTableRecord;
-//        showRouteTable(selfname);
+        //新表
+        Set<RouteRecord> newrouteTablelist = newrouteTable.getRoutetable();
 
+
+        System.out.println("before:----");
+        Print(routetable);
         boolean existed;
-        for (int i = 0; i < newrouteTablelist.size(); i++) {
-            newRouteTableRecord = newrouteTablelist.get(i);
+        int cost=getCost(selfname,name,distances);
 
+
+        for (RouteRecord newRouteTableRecord : newrouteTablelist) {
             //如果是邻接节点
+
             if (newRouteTableRecord.getNextStep().equals("-")) {
-                routetable.add(new RouteRecord(newRouteTableRecord.getTargetRouter(), newRouteTableRecord.getCost() + 1, newRouteTableRecord.getTargetRouter()));
+                routetable.add(new RouteRecord(newRouteTableRecord.getTargetRouter(), cost, newRouteTableRecord.getTargetRouter()));
             } else {
+
                 existed = false;
-                int size = routetable.size();
-                for (int j = 0; j < size; j++) {
-                    if (newRouteTableRecord.equals(routetable.get(j)) || newRouteTableRecord.getTargetRouter().equals(selfname)) {
+
+                for (RouteRecord routeRecord : routetable) {
+                    if (routeRecord.equals(newRouteTableRecord) || newRouteTableRecord.getTargetRouter().equals(selfname)) {
                         existed = true;
                         break;
-                    } else if (routetable.get(j).getTargetRouter().equals(newRouteTableRecord.getTargetRouter())) {
-                        existed = true;
-                        if (routetable.get(j).getCost() > (newRouteTableRecord.getCost() + 1)) {
-                            routetable.get(j).setCost(newRouteTableRecord.getCost() + 1);
-                            routetable.get(j).setNextStep(name);
+                    } else {
+                        if (newRouteTableRecord.getTargetRouter().equals(routeRecord.getTargetRouter())) {
+                            if (newRouteTableRecord.getCost() + cost < routeRecord.getCost()) {
+                                routeRecord.setCost(newRouteTableRecord.getCost() + cost);
+                                routeRecord.setNextStep(newrouteTable.selfname);
+                            }
+                            existed = true;
+                            break;
                         }
-                        break;
                     }
                 }
                 if (!existed) {
-                    routetable.add(new RouteRecord(newRouteTableRecord.getTargetRouter(), newRouteTableRecord.getCost() + 1, name));
+                    routetable.add(new RouteRecord(newRouteTableRecord.getTargetRouter(), newRouteTableRecord.getCost() + cost, name));
                 }
 
             }
+
+
+            System.out.println("after:----");
+            Print(routetable);
+
         }
-//        //创建一个集合
-//        Vector list = new Vector();
-//        //遍历数组往集合里存元素
-//        for (RouteRecord aRoutetable : routetable) {
-//            //如果集合里面没有相同的元素才往里存
-//            if (!list.contains(aRoutetable)) {
-//                list.add(aRoutetable);
-//            }
-//        }
-//        routetable = list;
-//        Gson gson=new Gson();
-//        System.out.println(selfname+"@@@"+gson.toJson(routetable));
 
         return true;
 

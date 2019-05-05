@@ -1,7 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,6 +16,8 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
     private CircleButton circleButton;
     private JTextField textField;
     private RouterView[] routerViews;
+    private JTextField[] textFields;
+    private JButton submitButton;
     private Point[] circleRouterPoints;
     private Lines[] lines;
     private int LittleRectNums = 8;
@@ -39,7 +45,6 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
     public void paint(Graphics g) {
         super.paint(g);
 
-
         g.setColor(Color.ORANGE);
 
         for (int index = LineNums; index < LittleRectNums; index++) {
@@ -52,6 +57,7 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
             g.fillRect(LittleRectX[index] + lines[index].getPoint1().x, LittleRectY[index] + lines[index].getPoint1().y, LittleRectWidth, LittleRectWidth);
 
         }
+
 
     }
 
@@ -170,23 +176,29 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         add(label4);
 
 
-        JTextField textField1 = new JTextField(10);
-        textField1.setBounds(screenWidth - 300, 210, 60, 30);
-        add(textField1);
+        textFields = new JTextField[4];
 
-        JTextField textField2 = new JTextField(10);
-        textField2.setBounds(screenWidth - 300, 310, 60, 30);
-        add(textField2);
+        textFields[0] = new JTextField(10);
+        textFields[0].setText(String.valueOf(1));
+        textFields[0].setBounds(screenWidth - 300, 210, 60, 30);
+        add(textFields[0]);
 
-        JTextField textField3 = new JTextField(10);
-        textField3.setBounds(screenWidth - 300, 410, 60, 30);
-        add(textField3);
+        textFields[1] = new JTextField(10);
+        textFields[1].setText(String.valueOf(1));
+        textFields[1].setBounds(screenWidth - 300, 310, 60, 30);
+        add(textFields[1]);
 
-        JTextField textField4 = new JTextField(10);
-        textField4.setBounds(screenWidth - 300, 510, 60, 30);
-        add(textField4);
+        textFields[2] = new JTextField(10);
+        textFields[2].setText(String.valueOf(1));
+        textFields[2].setBounds(screenWidth - 300, 410, 60, 30);
+        add(textFields[2]);
 
-        JButton submitButton = new JButton("确认");
+        textFields[3] = new JTextField(10);
+        textFields[3].setText(String.valueOf(1));
+        textFields[3].setBounds(screenWidth - 300, 510, 60, 30);
+        add(textFields[3]);
+
+        submitButton = new JButton("确认");
         submitButton.setBounds(screenWidth - 400, 610, 60, 30);
         add(submitButton);
 
@@ -227,12 +239,10 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         int cost = 0;
         String resultString = "";
         RouteTable routeTable = mainModel.getRouters()[i].getRouteTable();
-        RouteRecord routeRecord;
 
         Vector<Moment> moments = new Vector<>();
         moments.add(new Moment("      目的地址        费用      下一跳"));
-        for (int index = 0; index < routeTable.getRoutetable().size(); index++) {
-            routeRecord = routeTable.getRoutetable().get(index);
+        for (RouteRecord routeRecord : routeTable.getRoutetable()) {
             target = routeRecord.getTargetRouter();
             next = routeRecord.getNextStep();
             cost = routeRecord.getCost();
@@ -278,12 +288,9 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         circleButton.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-for (int index=0;index<10;index++){
-    executorService.execute(MainView.this::drawFrame);
-    mainModel.sendMessage();
-    mainModel.showMessages();
-}
 
+                executorService.execute(MainView.this::drawFrame);
+                mainModel.sendMessage();
 
 
             }
@@ -310,6 +317,38 @@ for (int index=0;index<10;index++){
 
 
         });
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Router[] routers=mainModel.getRouters();
+                Distance distance[]=new Distance[4];
+                String s0 = textFields[0].getText();
+                if (!"".equals(s0)) {
+                    int d0 = Integer.parseInt(s0);
+                    distance[0]=new Distance(routers[0],routers[2],d0);
+                }
+                String s1 = textFields[1].getText();
+                if (!"".equals(s1)) {
+                    int d1 = Integer.parseInt(s1);
+                    distance[1]=new Distance(routers[0],routers[3],d1);
+                }
+                String s2 = textFields[2].getText();
+                if (!"".equals(s2)) {
+                    int d2 = Integer.parseInt(s2);
+                    distance[2]=new Distance(routers[0],routers[4],d2);
+                }
+                String s3 = textFields[3].getText();
+                if (!"".equals(s3)) {
+                    int d3 = Integer.parseInt(s3);
+                    distance[3]=new Distance(routers[1],routers[2],d3);
+                }
+
+                mainModel.updateDistance(distance);
+            }
+        });
+
+
     }
 
     @Override

@@ -11,16 +11,16 @@ import java.net.Socket;
 public class ServerThread implements Runnable {
     private Socket socket;
     private Router router;
+    private Distance distance;
 
     private Router.OnUpdateViewListener onUpdateViewListener;
 
 
     public ServerThread(Socket socket, Router router, Router.OnUpdateViewListener onUpdateViewListener) {
         this.socket = socket;
-        this.router=router;
-        this.onUpdateViewListener=onUpdateViewListener;
+        this.router = router;
+        this.onUpdateViewListener = onUpdateViewListener;
     }
-
 
 
     @Override
@@ -32,16 +32,14 @@ public class ServerThread implements Runnable {
                 String jsonString;
                 String nameString;
                 String receiveString = in.readUTF();
-                String[] split = receiveString.split("!");
-                jsonString=split[0];
-                nameString=split[1];
                 Gson gson = new Gson();
-                RouteTable newrouteTable = gson.fromJson(jsonString, RouteTable.class);
+                RouteTable newrouteTable = gson.fromJson(receiveString, RouteTable.class);
 
+//                System.out.println("接收到数据：" + receiveString);
 
                 //更新本路由器路由表
-                boolean b = router.getRouteTable().updateRouteTable(nameString, newrouteTable);
-                if (b){
+                boolean b = router.getRouteTable().updateRouteTable(newrouteTable.getSelfname(), newrouteTable,router.getDistance());
+                if (b) {
                     onUpdateViewListener.updateView(router);
                 }
 
