@@ -83,7 +83,7 @@ public class RouteTable {
                         if (newRouteTableRecord.getTargetRouter().equals(routeRecord.getTargetRouter())) {
                             if (newRouteTableRecord.getCost() + cost < routeRecord.getCost()) {
                                 routeRecord.setCost(newRouteTableRecord.getCost() + cost);
-                                routeRecord.setNextStep(newrouteTable.selfname);
+                                routeRecord.setNextStep(name);
                             }
                             existed = true;
                             break;

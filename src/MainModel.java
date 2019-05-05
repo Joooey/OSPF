@@ -39,7 +39,7 @@ public class MainModel {
     public MainModel(Router.OnUpdateViewListener onUpdateViewListener) {
         this.onUpdateViewListener = onUpdateViewListener;
         initRouters();
-        showMessages();
+        //showMessages();
         receiveMessages();
     }
 

@@ -1,11 +1,11 @@
 import com.google.gson.Gson;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 public class Router {
@@ -18,9 +18,10 @@ public class Router {
     private List<Router> AdjRouters = new ArrayList<>();
     private Distance[] distance;
 
+    ServerSocket server;
+
 
     private OnUpdateViewListener onUpdateViewListener;
-
 
 
     public void setOnUpdateViewListener(OnUpdateViewListener onUpdateViewListener) {
@@ -41,10 +42,26 @@ public class Router {
         void updateView(Router router);
     }
 
+    public void freeServer() {
+        if (server != null) {
+            try {
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     public Router(int port, String name, int index) {
         this.port = port;
         this.name = name;
         this.index = index;
+        try {
+            server = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -84,33 +101,30 @@ public class Router {
         for (int index = 0; index < AdjRouters.size(); index++) {
             targetPort = AdjRouters.get(index).port;
             int finalTargetPort = targetPort;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+            new Thread(() -> {
+
+                try {
+                    // 连接到服务器
+                    Socket socket = new Socket(host, finalTargetPort);
 
                     try {
-                        // 连接到服务器
-                        Socket socket = new Socket(host, finalTargetPort);
+                        // 向服务器端发送信息的DataOutputStream
+                        DataOutputStream out = new DataOutputStream(socket
+                                .getOutputStream());
 
+                        Gson gson = new Gson();
                         try {
-                            // 向服务器端发送信息的DataOutputStream
-                            DataOutputStream out = new DataOutputStream(socket
-                                    .getOutputStream());
-
-                            Gson gson = new Gson();
-                            try {
-                                String jsonString = gson.toJson(routeTable);
-                                out.writeUTF(jsonString);
-                            } catch (Exception e) {
-                                int a = 0;
-                            }
-                        } finally {
-                            // socket.close();
+                            String jsonString = gson.toJson(routeTable);
+                            out.writeUTF(jsonString);
+                        } catch (Exception e) {
+                            int a = 0;
                         }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } finally {
+                        socket.close();
                     }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }).start();
         }
@@ -120,21 +134,20 @@ public class Router {
 
     public synchronized void receiveMessageFromOtherClient() {
         new Thread(() -> {
+
             try {
                 // 建立服务器连接,设定客户连接请求队列的长度
-                ServerSocket server = new ServerSocket(port);
+
                 while (true) {
                     // 等待客户连接
                     Socket socket = server.accept();
-
                     ServerThread serverThread = new ServerThread(socket, this, onUpdateViewListener);
                     serverThread.run();
-                    // new Thread(serverThread).start();
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }).start();
 
     }

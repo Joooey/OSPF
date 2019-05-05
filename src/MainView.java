@@ -20,6 +20,8 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
     private JButton submitButton;
     private Point[] circleRouterPoints;
     private Lines[] lines;
+    private Router[] routers;
+    private int[] dd;
     private int LittleRectNums = 8;
     private int LineNums = 4;
     private int LittleRectWidth = 10;
@@ -34,9 +36,12 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
 
 
     public MainView() throws HeadlessException {
+        init();
+    }
+
+    private void init() {
         initData();
         initView();
-
         initListener();
     }
 
@@ -55,6 +60,11 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         for (int index = 0; index < LineNums; index++) {
             g.drawLine(lines[index].getPoint1().x, lines[index].getPoint1().y, lines[index].getPoint2().x, lines[index].getPoint2().y);
             g.fillRect(LittleRectX[index] + lines[index].getPoint1().x, LittleRectY[index] + lines[index].getPoint1().y, LittleRectWidth, LittleRectWidth);
+
+        }
+        for (int index = 0; index < LineNums; index++) {
+            g.setFont(ViewConfigure.defaultTextFont);
+            g.drawString(String.valueOf(dd[index]), (lines[index].getPoint1().x + lines[index].getPoint2().x) / 2, (lines[index].getPoint1().y + lines[index].getPoint2().y) / 2);
 
         }
 
@@ -76,7 +86,10 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         routerViews = new RouterView[RouterConfigure.routerCount];
         circleRouterPoints = new Point[RouterConfigure.routerCount];
         lines = new Lines[LineNums];
-
+        dd = new int[4];
+        for (int i = 0; i < 4; i++) {
+            dd[i] = 1;
+        }
         executorService = Executors.newSingleThreadExecutor();
 
 
@@ -85,6 +98,7 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
 
     @Override
     public void initView() {
+
         int screenHeight;
         int screenWidth;
         int frm_Height;
@@ -198,7 +212,7 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         textFields[3].setBounds(screenWidth - 300, 510, 60, 30);
         add(textFields[3]);
 
-        submitButton = new JButton("确认");
+        submitButton = new JButton("重置");
         submitButton.setBounds(screenWidth - 400, 610, 60, 30);
         add(submitButton);
 
@@ -208,6 +222,10 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         lines[2] = new Lines(routerViews, 0, 4);
         lines[3] = new Lines(routerViews, 1, 2);
         ComputeDistance();
+        routers = mainModel.getRouters();
+        for (int i = 0; i < 5; i++) {
+            updateView(routers[i]);
+        }
 
         //设置窗体是否可以调整大小
         setResizable(true);
@@ -288,7 +306,7 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         circleButton.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                updateDistanceFromUi();
                 executorService.execute(MainView.this::drawFrame);
                 mainModel.sendMessage();
 
@@ -321,34 +339,49 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Router[] routers=mainModel.getRouters();
-                Distance distance[]=new Distance[4];
-                String s0 = textFields[0].getText();
-                if (!"".equals(s0)) {
-                    int d0 = Integer.parseInt(s0);
-                    distance[0]=new Distance(routers[0],routers[2],d0);
-                }
-                String s1 = textFields[1].getText();
-                if (!"".equals(s1)) {
-                    int d1 = Integer.parseInt(s1);
-                    distance[1]=new Distance(routers[0],routers[3],d1);
-                }
-                String s2 = textFields[2].getText();
-                if (!"".equals(s2)) {
-                    int d2 = Integer.parseInt(s2);
-                    distance[2]=new Distance(routers[0],routers[4],d2);
-                }
-                String s3 = textFields[3].getText();
-                if (!"".equals(s3)) {
-                    int d3 = Integer.parseInt(s3);
-                    distance[3]=new Distance(routers[1],routers[2],d3);
-                }
 
-                mainModel.updateDistance(distance);
+                frameInit();
+                for (Router router:mainModel.getRouters()){
+                    router.freeServer();
+                }
+                init();
+                updateDistanceFromUi();
             }
         });
 
 
+    }
+
+    private void updateDistanceFromUi() {
+        Router[] routers = mainModel.getRouters();
+        Distance distance[] = new Distance[4];
+        String s0 = textFields[0].getText();
+        if (!"".equals(s0)) {
+            int d0 = Integer.parseInt(s0);
+            dd[0] = d0;
+            distance[0] = new Distance(routers[0], routers[2], d0);
+        }
+
+        String s1 = textFields[1].getText();
+        if (!"".equals(s1)) {
+            int d1 = Integer.parseInt(s1);
+            dd[1] = d1;
+            distance[1] = new Distance(routers[0], routers[3], d1);
+        }
+        String s2 = textFields[2].getText();
+        if (!"".equals(s2)) {
+            int d2 = Integer.parseInt(s2);
+            dd[2] = d2;
+            distance[2] = new Distance(routers[0], routers[4], d2);
+        }
+        String s3 = textFields[3].getText();
+        if (!"".equals(s3)) {
+            int d3 = Integer.parseInt(s3);
+            dd[3] = d3;
+            distance[3] = new Distance(routers[1], routers[2], d3);
+        }
+
+        mainModel.updateDistance(distance);
     }
 
     @Override

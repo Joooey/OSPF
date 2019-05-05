@@ -39,6 +39,7 @@ public class ServerThread implements Runnable {
 
                 //更新本路由器路由表
                 boolean b = router.getRouteTable().updateRouteTable(newrouteTable.getSelfname(), newrouteTable,router.getDistance());
+                System.out.println(b);
                 if (b) {
                     onUpdateViewListener.updateView(router);
                 }
