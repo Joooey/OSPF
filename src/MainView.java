@@ -73,7 +73,7 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
 
     public void setBackGround() {
         ((JPanel) this.getContentPane()).setOpaque(false);
-        ImageIcon img = new ImageIcon("C:\\Courses\\Computer Network\\OSPF\\res\\background.png");
+        ImageIcon img = new ImageIcon("res\\background.png");
         JLabel background = new JLabel(img);
         this.getLayeredPane().add(background, new Integer(Integer.MIN_VALUE));
         background.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
@@ -127,8 +127,8 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
 
         int D = 60;
 
-        int xPadding = 400;
-        int yPadding = 275;
+        int xPadding = getWidth()/5;
+        int yPadding = getHeight()/4;
         int yTransfer = -50;
 
 
@@ -165,28 +165,28 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
         JLabel label = new JLabel("设置距离：");
         label.setForeground(ViewConfigure.defaultTextColor);
         label.setFont(ViewConfigure.defaultTextFont);
-        label.setBounds(screenWidth - 500, 100, 100, 50);
+        label.setBounds(screenWidth - getWidth()/4, 100, 100, 50);
         add(label);
         JLabel label1 = new JLabel("Router 1 - Router 3 :");
         label1.setForeground(ViewConfigure.defaultTextColor);
         label1.setFont(ViewConfigure.defaultTextFont);
-        label1.setBounds(screenWidth - 500, 200, 300, 50);
+        label1.setBounds(screenWidth - getWidth()/4, 200, 300, 50);
         add(label1);
         JLabel label2 = new JLabel("Router 1 - Router 4 :");
         label2.setForeground(ViewConfigure.defaultTextColor);
         label2.setFont(ViewConfigure.defaultTextFont);
-        label2.setBounds(screenWidth - 500, 300, 300, 50);
+        label2.setBounds(screenWidth - getWidth()/4, 300, 300, 50);
         add(label2);
         JLabel label3 = new JLabel("Router 1 - Router 5 :");
         label3.setForeground(ViewConfigure.defaultTextColor);
         label3.setFont(ViewConfigure.defaultTextFont);
-        label3.setBounds(screenWidth - 500, 400, 300, 50);
+        label3.setBounds(screenWidth - getWidth()/4, 400, 300, 50);
         add(label3);
 
         JLabel label4 = new JLabel("Router 2 - Router 3 ");
         label4.setForeground(ViewConfigure.defaultTextColor);
         label4.setFont(ViewConfigure.defaultTextFont);
-        label4.setBounds(screenWidth - 500, 500, 300, 50);
+        label4.setBounds(screenWidth - getWidth()/4, 500, 300, 50);
         add(label4);
 
 
@@ -194,26 +194,26 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
 
         textFields[0] = new JTextField(10);
         textFields[0].setText(String.valueOf(1));
-        textFields[0].setBounds(screenWidth - 300, 210, 60, 30);
+        textFields[0].setBounds(screenWidth - getWidth()/8, 210, 60, 30);
         add(textFields[0]);
 
         textFields[1] = new JTextField(10);
         textFields[1].setText(String.valueOf(1));
-        textFields[1].setBounds(screenWidth - 300, 310, 60, 30);
+        textFields[1].setBounds(screenWidth - getWidth()/8, 310, 60, 30);
         add(textFields[1]);
 
         textFields[2] = new JTextField(10);
         textFields[2].setText(String.valueOf(1));
-        textFields[2].setBounds(screenWidth - 300, 410, 60, 30);
+        textFields[2].setBounds(screenWidth - getWidth()/8, 410, 60, 30);
         add(textFields[2]);
 
         textFields[3] = new JTextField(10);
         textFields[3].setText(String.valueOf(1));
-        textFields[3].setBounds(screenWidth - 300, 510, 60, 30);
+        textFields[3].setBounds(screenWidth - getWidth()/8, 510, 60, 30);
         add(textFields[3]);
 
         submitButton = new JButton("重置");
-        submitButton.setBounds(screenWidth - 400, 610, 60, 30);
+        submitButton.setBounds(screenWidth - getWidth()/5, 610, 60, 30);
         add(submitButton);
 
 
@@ -309,31 +309,23 @@ public class MainView extends JFrame implements IMainView, Router.OnUpdateViewLi
                 updateDistanceFromUi();
                 executorService.execute(MainView.this::drawFrame);
                 mainModel.sendMessage();
-
-
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-
             }
-
-
         });
 
         submitButton.addActionListener(new ActionListener() {

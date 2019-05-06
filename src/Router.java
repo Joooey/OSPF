@@ -131,7 +131,6 @@ public class Router {
 
     }
 
-
     public synchronized void receiveMessageFromOtherClient() {
         new Thread(() -> {
 
